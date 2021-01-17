@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'Gotham Pro';
+  src: url('~assets/fonts/GothamPro.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gotham Pro';
+  src: url('~assets/fonts/GothamPro-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: bold;
+}
+
+body {
+  overflow: hidden;
+}
+
+.component-wrapper {
+  padding: 30px;
+}
+
+.v-application {
+  font-weight: bold;
+  color: $color-main;
+
+  * {
+    color: $color-main;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  ul, ol {
+    padding-left: 0px !important;
+    li {
+      list-style: none;
+    }
+  }
+}
