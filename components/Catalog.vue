@@ -30,29 +30,25 @@
                 :value="filter.value"
                 :name="filter.name"
                 :sup="filter.sup"
+                @submit-filters="update"
               />
             </div>
           </v-row>
           <v-row
             class="justify-space-between"
           >
-            <v-card
-              v-for="(item, index) in items"
-              :key="index"
-              width="270px"
-              height="365px"
+            <transition-group
+              v-if="items.length > 0"
+              class="cards-wrapper"
+              name="list"
+              tag="div"
             >
-              <div class="card-header">
-                <span class="card-header--floor">
-                  {{ item.floor }} этаж
-                </span>
-                <span class="card-header--rooms">
-                  {{ item.rooms }}
-                  <span class="divider">-</span>
-                  {{ item.square }} м <sup>2</sup>
-                </span>
-              </div>
-            </v-card>
+              <CardItem
+                v-for="(item) in items"
+                :key="item.building_id + item.price"
+                :item="item"
+              />
+            </transition-group>
           </v-row>
         </div>
       </v-card>
@@ -77,13 +73,23 @@ export default {
   },
   data: () => {
     return {
-      dialog: true
+      dialog: true,
+      items: [],
+      // fix for server data
+      map: new Map([
+        ['1к', '1k'],
+        ['2к', '2k'],
+        ['3к', '3k'],
+        ['4k', '4к'],
+        ['s', 'XS'],
+        ['4', '3к']
+      ])
     }
   },
   computed: {
     ...mapGetters('catalog', ['getProperty']),
-    items () {
-      return this.getProperty('$.items')[0]
+    filtersSelected () {
+      return this.getProperty('$.filtersSelected')[0]
     },
     filters () {
       return this.getProperty('$.filters')[0]
@@ -92,9 +98,42 @@ export default {
   mounted () {
     this.$nextTick(() => {
       Scrollbar.init(document.querySelector('#catalog-scrollbar'))
+      this.items = this.getProperty('$.items')[0]
     })
   },
-  methods: mapActions('catalog', ['setProperty'])
+  methods: {
+    ...mapActions('catalog', ['setProperty']),
+    update () {
+      if (this.filtersSelected.length !== 0) {
+        const filters = new Array(...this.filtersSelected)
+        let filterString = '$.items[?('
+        filters.forEach((el, key) => {
+          const filterName = el.name
+          const start = '@.'
+          if (el.type !== 'filter-range') {
+            let arr = new Array(...el.value)
+            arr = arr.map((el) => {
+              return `${start}${filterName}=='${this.map.get(el.toLowerCase())}'|`
+            })
+            filterString += arr.reduce(
+              (acc, el) => {
+                acc += el
+                return acc
+              })
+          } else
+          if (el.name === 'price') {
+            filterString += `${start}${filterName}>${el.value[0] * 1000000}&${start}${filterName}` + '<' + `${el.value[1] * 1000000}&`
+          } else {
+            filterString += `${start}${filterName}>${el.value[0]}&${start}${filterName}` + '<' + `${el.value[1]}&`
+          }
+        })
+
+        filterString = filterString.replace(/&$/, '') + ')]'
+        console.log(filterString)
+        this.items = this.getProperty(filterString)
+      }
+    }
+  }
 }
 </script>
 
@@ -121,20 +160,18 @@ export default {
   }
 }
 
-.underscore {
-  margin-top: 5px;
-
-  ::v-deep .v-btn__content {
-    border-bottom: solid 1px $color-primary;
-    max-width: max-content;
-  }
-
-}
-
 .filters {
   &--item {
     width: max-content;
   }
+}
+
+.cards-wrapper {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 50px;
 }
 
 ::v-deep .v-dialog {
@@ -143,7 +180,9 @@ export default {
 }
 
 #catalog-scrollbar {
-  max-height: 80vh;
   overflow: auto;
+  max-height: 84vh;
+  height: 84vh;
 }
+
 </style>

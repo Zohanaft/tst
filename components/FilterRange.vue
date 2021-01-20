@@ -32,7 +32,10 @@
           color="primary"
           :min="value[0]"
           :max="value[1]"
-          @change="$debounce(update(valueCopy),100)"
+          :step="name !== 'price' ? 1 : .1"
+          @change="$debounce(()=>{
+            update(valueCopy)
+          },100)"
         />
       </div>
     </div>
@@ -64,6 +67,10 @@ export default {
     sup: {
       type: String,
       default: undefined
+    },
+    type: {
+      type: String,
+      default: undefined
     }
   },
   data: () => {
@@ -80,11 +87,12 @@ export default {
     }
   },
   watch: {
-    selected (val, next) {
-      if (val.toString() !== next.toString()) {
-        this.valueCopy[0] = val[0]
-        this.valueCopy[1] = val[1]
-      }
+    selected: {
+      handler (val) {
+        this.$set(this.valueCopy, 0, val[0])
+        this.$set(this.valueCopy, 1, val[1])
+      },
+      deep: true
     }
   },
   mounted () {
@@ -166,5 +174,29 @@ export default {
   line-height: 28px;
   color: $color-main;
   font-weight: normal;
+}
+
+::v-deep .v-slider__thumb {
+  width: 16px;
+  height: 16px;
+
+  &::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    border: solid 4px white;
+    z-index: -1;
+    opacity: 1;
+    left: 50% !important;
+    top: 50% !important;
+    background: #70D24E;
+    transform-origin: center;
+    transform: scale(1) translate(-50%, -50%) !important;
+  }
+}
+
+::v-deep .v-slider__thumb-container--active .v-slider__thumb::before {
+  transform: scale(1.1) translate(-50%, -50%) !important;
 }
 </style>

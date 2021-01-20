@@ -2990,7 +2990,7 @@ de-indent@^1.0.2:
 
 "debounce@https://github.com/Zohanaft/little_utills.git":
   version "1.0.0"
-  resolved "https://github.com/Zohanaft/little_utills.git#7c346c1c4cf936d258f21d0262bcb2e77076ac2e"
+  resolved "https://github.com/Zohanaft/little_utills.git#349b98ddd2874d2bc49a987ee206a1eff5f5a797"
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   version "2.6.9"

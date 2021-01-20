@@ -19,7 +19,7 @@ export const state = () => ({
       type: 'filter-range',
       title: 'ЭТАЖ',
       name: 'floor',
-      value: [1, 8]
+      value: [1, 12]
     },
     {
       type: 'filter-range',
@@ -60,7 +60,39 @@ export const state = () => ({
       type: 'filter-range',
       title: 'ЭТАЖ',
       name: 'floor',
-      value: [1, 8]
+      value: [1, 12]
+    },
+    {
+      type: 'filter-range',
+      title: 'ПЛОЩАДЬ, м',
+      sup: '2',
+      name: 'square',
+      value: [10, 147]
+    },
+    {
+      type: 'filter-range',
+      title: 'СТОИМОСТЬ, млн. р.',
+      name: 'price',
+      value: [1.3, 25.6]
+    }
+  ],
+  defaultFilters: [
+    {
+      type: 'filter-buttons',
+      title: 'КОМНАТЫ',
+      name: 'rooms',
+      value: [
+        'S',
+        '1к',
+        '2к',
+        '3к'
+      ]
+    },
+    {
+      type: 'filter-range',
+      title: 'ЭТАЖ',
+      name: 'floor',
+      value: [1, 12]
     },
     {
       type: 'filter-range',
@@ -94,6 +126,13 @@ export const actions = {
 
   setProperty ({ commit }, { path, value }) {
     commit('setProperty', { path, value })
+  },
+
+  clearFilters ({ commit, state }) {
+    commit('setProperty', {
+      path: '$.filtersSelected',
+      value: JSON.parse(JSON.stringify(state.defaultFilters))
+    })
   }
 }
 
