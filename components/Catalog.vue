@@ -4,120 +4,55 @@
     eager
     max-width="1760px"
     width="100%"
-    scrollable
   >
     <v-sheet
       class="catalog component-wrapper"
       color="lighten1 lighten-1"
     >
       <v-card
+        id="catalog-scrollbar"
         color="secondary lighten-1"
       >
         <h2 class="catalog-title col-12 px-0">
           Lorem ipsum dolor sit
         </h2>
         <div class="catalog-filters container">
-          <v-row>
-            <div class="catalog-filters col">
-              <span class="component-filters component-filters--title">
-                КОМНАТЫ
-              </span>
-              <div class="button-group d-flex justify-space-between">
-                <v-btn
-                  v-for="(room,index) in rooms"
-                  :key="index"
-                  class="px-0"
-                  color="primary"
-                  depressed
-                  dark
-                  min-width="47px"
-                  height="40px"
-                  :value="room"
-                >
-                  {{ room }}
-                </v-btn>
-              </div>
+          <v-row class="d-flex justify-space-between">
+            <div
+              v-for="(filter, index) in filters"
+              :key="index"
+              class="filters--item"
+            >
+              <component
+                :is="filter.type"
+                :title="filter.title"
+                :index="index"
+                :value="filter.value"
+                :name="filter.name"
+                :sup="filter.sup"
+              />
             </div>
-            <div class="catalog-filters col">
-              <span class="component-filters component-filters--title">
-                КОМНАТЫ
-              </span>
-              <div class="button-group d-flex justify-space-between">
-                <v-btn
-                  v-for="(room,index) in rooms"
-                  :key="index"
-                  class="px-0"
-                  color="primary"
-                  depressed
-                  dark
-                  min-width="47px"
-                  height="40px"
-                  :value="room"
-                >
-                  {{ room }}
-                </v-btn>
+          </v-row>
+          <v-row
+            class="justify-space-between"
+          >
+            <v-card
+              v-for="(item, index) in items"
+              :key="index"
+              width="270px"
+              height="365px"
+            >
+              <div class="card-header">
+                <span class="card-header--floor">
+                  {{ item.floor }} этаж
+                </span>
+                <span class="card-header--rooms">
+                  {{ item.rooms }}
+                  <span class="divider">-</span>
+                  {{ item.square }} м <sup>2</sup>
+                </span>
               </div>
-            </div>
-            <div class="catalog-filters col">
-              <span class="component-filters component-filters--title">
-                КОМНАТЫ
-              </span>
-              <div class="button-group d-flex justify-space-between">
-                <v-btn
-                  v-for="(room,index) in rooms"
-                  :key="index"
-                  class="px-0"
-                  color="primary"
-                  depressed
-                  dark
-                  min-width="47px"
-                  height="40px"
-                  :value="room"
-                >
-                  {{ room }}
-                </v-btn>
-              </div>
-            </div>
-            <div class="catalog-filters col">
-              <span class="component-filters component-filters--title">
-                КОМНАТЫ
-              </span>
-              <div class="button-group d-flex justify-space-between">
-                <v-btn
-                  v-for="(room,index) in rooms"
-                  :key="index"
-                  class="px-0"
-                  color="primary"
-                  depressed
-                  dark
-                  min-width="47px"
-                  height="40px"
-                  :value="room"
-                >
-                  {{ room }}
-                </v-btn>
-              </div>
-            </div>
-            <div class="catalog-filters col">
-              <span class="component-filters component-filters--title">
-                КОМНАТЫ
-              </span>
-              <div class="button-group d-flex justify-space-between">
-                <v-btn
-                  v-for="(room,index) in rooms"
-                  :key="index"
-                  class="px-0"
-                  color="primary"
-                  dark
-                  depressed
-                  min-width="47px"
-                  height="40px"
-                  :value="room"
-                >
-                  {{ room }}
-                </v-btn>
-              </div>
-            </div>
+            </v-card>
           </v-row>
         </div>
       </v-card>
@@ -126,27 +61,38 @@
 </template>
 
 <script>
+import Scrollbar from 'smooth-scrollbar'
+
 import { mapGetters, mapActions } from 'vuex'
+import FilterButtons from './FilterButtons'
+import FilterRange from './FilterRange'
+import FilterSubmit from './FilterSubmit'
 
 export default {
   name: 'Catalog',
+  components: {
+    FilterButtons,
+    FilterRange,
+    FilterSubmit
+  },
   data: () => {
     return {
-      dialog: true,
-      rooms: [
-        'S',
-        '1к',
-        '2к',
-        '3к'
-      ],
-      selectedRooms: []
+      dialog: true
     }
   },
   computed: {
     ...mapGetters('catalog', ['getProperty']),
     items () {
-      return this.getProperty('$.items')
+      return this.getProperty('$.items')[0]
+    },
+    filters () {
+      return this.getProperty('$.filters')[0]
     }
+  },
+  mounted () {
+    this.$nextTick(() => {
+      Scrollbar.init(document.querySelector('#catalog-scrollbar'))
+    })
   },
   methods: mapActions('catalog', ['setProperty'])
 }
@@ -165,15 +111,39 @@ export default {
     text-align: center;
     text-transform: uppercase;
   }
-}
 
-.component-filters {
-  &--title {
-    font-style: normal;
-    font-weight: bold;
-    font-size: 12px;
-    line-height: 28px;
+  &-filters {
+
+    &--submit {
+      text-transform: uppercase;
+      padding-top: 28px;
+    }
   }
 }
 
+.underscore {
+  margin-top: 5px;
+
+  ::v-deep .v-btn__content {
+    border-bottom: solid 1px $color-primary;
+    max-width: max-content;
+  }
+
+}
+
+.filters {
+  &--item {
+    width: max-content;
+  }
+}
+
+::v-deep .v-dialog {
+  overflow: hidden;
+  overflow-y: hidden;
+}
+
+#catalog-scrollbar {
+  max-height: 80vh;
+  overflow: auto;
+}
 </style>

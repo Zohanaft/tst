@@ -12,12 +12,13 @@
   font-style: bold;
 }
 
-body {
-  overflow: hidden;
+html {
+  overflow: hidden !important;
 }
 
 .component-wrapper {
   padding: 30px;
+  max-height: 90vh;
 }
 
 .v-application {
