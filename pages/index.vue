@@ -11,8 +11,8 @@
 
 export default {
   name: 'Homepage',
-  async fetch ({ store }) {
-    return await store.dispatch('catalog/fetchItems')
+  fetch ({ store }) {
+    return store.dispatch('catalog/fetchItems')
   }
 }
 </script>

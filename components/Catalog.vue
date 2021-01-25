@@ -129,7 +129,6 @@ export default {
         })
 
         filterString = filterString.replace(/&$/, '') + ')]'
-        console.log(filterString)
         this.items = this.getProperty(filterString)
       }
     }
